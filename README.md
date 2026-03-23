@@ -1,48 +1,111 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop (JVM).
+# 🍽️ KMP Kitchen Connect
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+A Kotlin Multiplatform (KMP) application designed to simulate a **Kitchen Display System (KDS)** with offline-first communication between devices.
 
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run Desktop (JVM) Application
-
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+This project enables two roles:
+- 🧑‍🍳 **Kitchen Mode** – receives and manages orders in a Kanban-style board
+- 📱 **Order Mode** – creates and sends orders to the kitchen
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## 🚀 Features
+
+- ✅ Kotlin Multiplatform (Desktop, Android, Tablet-ready)
+- ✅ Offline-first architecture
+- ✅ Peer-to-peer communication using Ktor + JSON
+- ✅ Real-time order updates
+- ✅ Kanban-style kitchen display (KDS)
+- ✅ Simple and extensible architecture
+
+---
+
+## 🧠 Architecture Overview
+
+The system is designed to work **without internet**, using local communication between devices.
+
+```text
+[ Order Device ]  --->  [ Kitchen Display System ]
+        (Client)              (Server)
+```
+
+### Key Technologies
+
+- **Kotlin Multiplatform (KMP)**
+- **Ktor** for communication
+- **Kotlinx Serialization (JSON)**
+- **Compose Multiplatform** (UI)
+- **SQLite / Local Storage (planned/optional)**
+
+---
+
+## 📦 Modules
+
+| Module       | Description                                                     |
+|--------------|-----------------------------------------------------------------|
+| `composeApp` | Business logic, models, networking                              |
+| `androidApp` | Android application                                             |
+| `jvmMain`    | Desktop application and Ktor server running inside Kitchen mode |
+
+---
+
+## 🔄 Data Flow
+
+1. User creates an order on **Order Mode**
+2. Order is serialized to JSON
+3. Sent via Ktor HTTP (or local network)
+4. Kitchen receives and updates Kanban board
+5. Status updates can be propagated back
+
+---
+
+## 🛠️ How to Run
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/mrcsxsiq/KMP-Kitchen-Connect.git
+cd KMP-Kitchen-Connect
+```
+
+### 2. Run Desktop App
+
+```bash
+./gradlew :desktopApp:run
+```
+
+### 3. Run Android App
+
+Open in Android Studio and run normally.
+
+---
+
+## 📡 Communication Strategy
+
+- Uses **Ktor embedded server** in Kitchen Mode
+- Order devices act as **clients**
+- JSON payloads define orders and updates
+- Designed for **LAN environments (same Wi-Fi)**
+
+---
+
+## 🧪 Future Improvements
+
+- 🔐 Authentication between devices
+- 🗄️ Persistent storage (Room / SQLDelight)
+- 📊 Metrics dashboard
+- 🔔 Notifications
+
+---
+
+## 🎯 Goal
+
+This project demonstrates:
+- Real-world KMP usage
+- Device-to-device communication
+
+---
+
+## 📄 License
+
+MIT License
