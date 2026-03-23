@@ -20,7 +20,8 @@ This project enables two roles:
 ---
 ## Demo
 
-In progress
+
+https://github.com/user-attachments/assets/b9ac579c-3b54-477f-8a5c-788a8b84b5bb
 
 ---
 
@@ -72,13 +73,13 @@ git clone https://github.com/mrcsxsiq/KMP-Kitchen-Connect.git
 cd KMP-Kitchen-Connect
 ```
 
-### 2. Run Desktop App
+### 2. Run Desktop App (Kitchen Mode)
 
 ```bash
 ./gradlew :desktopApp:run
 ```
 
-### 3. Run Android App
+### 3. Run Android App (Order Mode)
 
 Open in Android Studio and run normally.
 
