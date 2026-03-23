@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ktorfit)
 }
 
 kotlin {
@@ -40,6 +41,9 @@ kotlin {
             implementation(projects.order)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.ktorfit.lib)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -94,6 +98,7 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "dev.marcos.lks.MainKt"
+        jvmArgs += listOf("-Dskiko.renderApi=SOFTWARE")
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

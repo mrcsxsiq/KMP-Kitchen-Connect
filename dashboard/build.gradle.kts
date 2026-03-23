@@ -6,6 +6,12 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
+}
+
+ktorfit {
+    compilerPluginVersion.set("2.3.3")
 }
 
 kotlin {
@@ -30,6 +36,7 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktorfit.lib)
 
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

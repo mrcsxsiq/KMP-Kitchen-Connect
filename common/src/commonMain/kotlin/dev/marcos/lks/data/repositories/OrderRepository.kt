@@ -1,42 +1,24 @@
 package dev.marcos.lks.data.repositories
 
+import dev.marcos.lks.data.datasources.remote.OrderApi
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderItem
 import dev.marcos.lks.data.model.OrderStatus
-import dev.marcos.lks.host
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.json.Json
 
-class OrderRepository {
+class OrderRepository(
+    private val api: OrderApi
+) {
     private val _orders = MutableStateFlow<List<Order>>(emptyList())
     val orders: Flow<List<Order>> = _orders.asStateFlow()
 
-    private val client = HttpClient {
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                }
-            )
-        }
-    }
-
     suspend fun fetchData() {
         try {
-            val response: List<Order> = client.get("http://${host}:8080/orders").body()
+            val response = api.getOrders()
             _orders.value = response
         } catch (e: Exception) {
             e.printStackTrace()
@@ -75,10 +57,7 @@ class OrderRepository {
 
     suspend fun addOrder(order: Order) {
         try {
-            client.post("http://${host}:8080/orders") {
-                contentType(ContentType.Application.Json)
-                setBody(order)
-            }
+            api.addOrder(order)
             fetchData()
         } catch (e: Exception) {
             e.printStackTrace()

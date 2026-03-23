@@ -4,6 +4,12 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
+}
+
+ktorfit {
+    compilerPluginVersion.set("2.3.3")
 }
 
 kotlin {
@@ -27,6 +33,7 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktorfit.lib)
             implementation(libs.compose.ui)
         }
         commonTest.dependencies {
