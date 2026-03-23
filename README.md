@@ -19,8 +19,14 @@ This project enables two roles:
 ---
 ## Demo
 
-
 https://github.com/user-attachments/assets/b9ac579c-3b54-477f-8a5c-788a8b84b5bb
+
+---
+
+## Prints
+<img  alt="grid" src="https://github.com/user-attachments/assets/ded018d5-6ad9-4e35-96e4-7f3c56f97ee8" />
+
+ 
 
 ---
 
