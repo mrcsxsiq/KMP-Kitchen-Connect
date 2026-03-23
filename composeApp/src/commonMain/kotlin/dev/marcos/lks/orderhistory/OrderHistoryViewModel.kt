@@ -1,11 +1,12 @@
-package dev.marcos.lks.order
+package dev.marcos.lks.orderhistory
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.marcos.lks.Order
+import dev.marcos.lks.data.model.Order
+import dev.marcos.lks.data.repositories.OrderHistoryRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

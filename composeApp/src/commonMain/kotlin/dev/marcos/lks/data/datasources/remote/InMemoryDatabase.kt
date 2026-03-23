@@ -1,5 +1,8 @@
-package dev.marcos.lks
+package dev.marcos.lks.data.datasources.remote
 
+import dev.marcos.lks.data.model.MenuItem
+import dev.marcos.lks.data.model.Order
+import dev.marcos.lks.data.model.OrderStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 

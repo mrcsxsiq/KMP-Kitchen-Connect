@@ -1,4 +1,4 @@
-package dev.marcos.lks
+package dev.marcos.lks.data.model
 
 import kotlinx.serialization.Serializable
 

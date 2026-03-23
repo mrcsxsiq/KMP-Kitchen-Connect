@@ -8,7 +8,11 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import dev.marcos.lks.dashboard.Dashboard
+import dev.marcos.lks.dashboard.DashboardScreen
+import dev.marcos.lks.data.model.MenuItem
+import dev.marcos.lks.data.model.Order
+import dev.marcos.lks.data.model.OrderItem
+import dev.marcos.lks.data.model.OrderStatus
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -26,9 +30,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.awt.Toolkit
 
-// Fonte de dados única no Servidor
 val serverOrders = MutableStateFlow<List<Order>>(listOf(
-    Order("#882", "Mesa 01", listOf(OrderItem(2, "Smash Burger Deluxe", "Sem Cebola")), "18m", OrderStatus.WAITING, "ATRASADO", true),
+    Order(
+        "#882",
+        "Mesa 01",
+        listOf(OrderItem(2, "Smash Burger Deluxe", "Sem Cebola")),
+        "18m",
+        OrderStatus.WAITING,
+        "ATRASADO",
+        true
+    ),
     Order("#884", "Mesa 01", listOf(OrderItem(1, "Salada Caesar Especial")), "04m", OrderStatus.WAITING, "AGUARDANDO"),
     Order("#879", "Mesa 01", listOf(OrderItem(1, "Salmão Grelhado", "AO PONTO")), "09m", OrderStatus.PREPARING, "COZINHANDO"),
     Order("#870", "Mesa 01", listOf(OrderItem(1, "Bife de Ancho")), "12:45", OrderStatus.DELIVERED, "CONCLUÍDO")
@@ -45,7 +56,6 @@ val serverMenu = listOf(
 fun main() {
     val scope = CoroutineScope(Dispatchers.Default)
 
-    // Inicia o servidor Ktor
     scope.launch {
         embeddedServer(Netty, port = 8080) {
             install(ContentNegotiation) {
@@ -58,23 +68,19 @@ fun main() {
                 allowHeader(HttpHeaders.ContentType)
             }
             routing {
-                // Endpoint para o Cardápio
                 get("/menu") {
                     call.respond(serverMenu)
                 }
 
-                // Endpoint para o Dashboard (apenas pedidos ativos)
                 get("/dashboard-orders") {
                     val activeOrders = serverOrders.value
                     call.respond(activeOrders)
                 }
 
-                // Endpoint para o Histórico (todos os pedidos)
                 get("/history-orders") {
                     call.respond(serverOrders.value)
                 }
 
-                // Endpoint para criar novo pedido (vindo do app Android)
                 post("/orders") {
                     try {
                         val newOrder = call.receive<Order>()
@@ -85,7 +91,6 @@ fun main() {
                     }
                 }
 
-                // Endpoint para atualizar status (vindo do Dashboard)
                 post("/update-status") {
                     try {
                         val params = call.receive<Map<String, String>>()
@@ -123,7 +128,7 @@ fun main() {
             title = "KMP Kitchen Connect",
             state = mainWindowState
         ) {
-            Dashboard()
+            DashboardScreen()
         }
     }
 }

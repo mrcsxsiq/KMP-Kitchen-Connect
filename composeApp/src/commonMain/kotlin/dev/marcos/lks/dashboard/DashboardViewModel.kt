@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.marcos.lks.DashboardRepository
-import dev.marcos.lks.Order
-import dev.marcos.lks.OrderStatus
+import dev.marcos.lks.data.repositories.DashboardRepository
+import dev.marcos.lks.data.model.Order
+import dev.marcos.lks.data.model.OrderStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

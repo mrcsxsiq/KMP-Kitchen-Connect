@@ -1,11 +1,12 @@
-package dev.marcos.lks.order
+package dev.marcos.lks.makeorder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.marcos.lks.MenuItem
-import dev.marcos.lks.Order
-import dev.marcos.lks.OrderItem
-import dev.marcos.lks.OrderStatus
+import dev.marcos.lks.data.model.MenuItem
+import dev.marcos.lks.data.model.Order
+import dev.marcos.lks.data.model.OrderItem
+import dev.marcos.lks.data.model.OrderStatus
+import dev.marcos.lks.data.repositories.OrderHistoryRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

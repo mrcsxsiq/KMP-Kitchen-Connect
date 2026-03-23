@@ -1,4 +1,4 @@
-package dev.marcos.lks.order
+package dev.marcos.lks.orderhistory
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.marcos.lks.Order
-import dev.marcos.lks.OrderStatus
+import dev.marcos.lks.data.model.Order
+import dev.marcos.lks.data.model.OrderStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -345,8 +345,6 @@ fun HistoryOrderCard(order: Order, onAction: () -> Unit) {
                         color = if (order.isLate) Color.Red else Color(0xFF1E293B)
                     )
                 }
-
-
             }
         }
     }

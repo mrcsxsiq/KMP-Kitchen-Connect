@@ -19,18 +19,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.marcos.lks.*
+import dev.marcos.lks.theme.Gray
+import dev.marcos.lks.theme.LightGray
+import dev.marcos.lks.theme.Mint
+import dev.marcos.lks.theme.Orange
+import dev.marcos.lks.theme.Red
+import dev.marcos.lks.theme.SkyBlue
+import dev.marcos.lks.theme.Teal
+import dev.marcos.lks.data.model.Order
+import dev.marcos.lks.data.model.OrderStatus
 
-val Orange = Color(0xFFFF8A00)
-val Teal = Color(0xFF00A699)
-val Mint = Color(0xFF00C2A0)
-val SkyBlue = Color(0xFF0EA5E9)
-val Gray = Color(0xFF4A5568)
-val Red = Color(0xFFFF4D4D)
-val LightGray = Color(0xFFF8FAFC)
 
 @Composable
-fun Dashboard(viewModel: DashboardViewModel = viewModel { DashboardViewModel() }) {
+fun DashboardScreen(viewModel: DashboardViewModel = viewModel { DashboardViewModel() }) {
     val orders by viewModel.orders.collectAsStateWithLifecycle()
     val isRefreshing = viewModel.isRefreshing
 

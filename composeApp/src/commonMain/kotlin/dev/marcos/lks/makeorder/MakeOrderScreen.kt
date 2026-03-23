@@ -1,4 +1,4 @@
-package dev.marcos.lks.order
+package dev.marcos.lks.makeorder
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.marcos.lks.MenuItem
-import dev.marcos.lks.OrderItem
+import dev.marcos.lks.data.model.MenuItem
+import dev.marcos.lks.data.model.OrderItem
 
 @Composable
 fun MakeOrderScreen(viewModel: MakeOrderViewModel = viewModel { MakeOrderViewModel() }) {

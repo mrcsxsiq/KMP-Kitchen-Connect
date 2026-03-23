@@ -1,11 +1,19 @@
-package dev.marcos.lks
+package dev.marcos.lks.data.repositories
 
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
+import dev.marcos.lks.data.model.Order
+import dev.marcos.lks.data.model.OrderItem
+import dev.marcos.lks.data.model.OrderStatus
+import dev.marcos.lks.host
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +38,7 @@ class OrderRepository {
     suspend fun fetchData() {
         try {
             // Usa o host dinâmico baseado na plataforma (127.0.0.1 ou 10.0.2.2)
-            val response: List<Order> = client.get("http://$host:8080/orders").body()
+            val response: List<Order> = client.get("http://${host}:8080/orders").body()
             _orders.value = response
         } catch (e: Exception) {
             e.printStackTrace()
@@ -71,7 +79,7 @@ class OrderRepository {
     suspend fun addOrder(order: Order) {
         try {
             // Tenta enviar o pedido para o servidor via POST
-            client.post("http://$host:8080/orders") {
+            client.post("http://${host}:8080/orders") {
                 contentType(ContentType.Application.Json)
                 setBody(order)
             }
