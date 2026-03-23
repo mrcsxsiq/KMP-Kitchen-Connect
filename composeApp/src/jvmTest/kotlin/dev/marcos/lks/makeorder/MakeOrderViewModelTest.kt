@@ -103,7 +103,7 @@ class MakeOrderViewModelTest {
             val viewModel: MakeOrderViewModel = koinApp.koin.get()
 
             val received = async {
-                viewModel.menuItems.first { it.isNotEmpty() }
+                viewModel.uiState.first { it.menuItems.isNotEmpty() }
             }
 
             repo.menuItems.value = listOf(
@@ -111,7 +111,7 @@ class MakeOrderViewModelTest {
             )
 
             advanceUntilIdle()
-            val menu = received.await()
+            val menu = received.await().menuItems
 
             assertEquals(1, menu.size)
             assertEquals("Smash", menu.first().name)

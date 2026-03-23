@@ -1,36 +1,40 @@
 package dev.marcos.lks.dashboard
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderStatus
-import dev.marcos.lks.data.repositories.DashboardRepository
 import dev.marcos.lks.data.repositories.DashboardRepositoryApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class DashboardUiState(
+    val orders: List<Order> = emptyList(),
+    val isRefreshing: Boolean = false
+)
+
 class DashboardViewModel(
-    private val repository: DashboardRepositoryApi = DashboardRepository()
+    private val repository: DashboardRepositoryApi
 ) : ViewModel() {
-
-    var isRefreshing by mutableStateOf(false)
-        private set
-
-    val orders: StateFlow<List<Order>> = repository.orders
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _uiState = MutableStateFlow(DashboardUiState())
+    val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
     init {
+        observeOrders()
         startPolling()
+    }
+
+    private fun observeOrders() {
+        viewModelScope.launch {
+            repository.orders.collect { orders ->
+                _uiState.update { it.copy(orders = orders) }
+            }
+        }
     }
 
     private fun startPolling() {
@@ -44,9 +48,9 @@ class DashboardViewModel(
 
     fun refresh() {
         viewModelScope.launch {
-            isRefreshing = true
+            _uiState.update { it.copy(isRefreshing = true) }
             repository.fetchDashboardOrders()
-            isRefreshing = false
+            _uiState.update { it.copy(isRefreshing = false) }
         }
     }
 

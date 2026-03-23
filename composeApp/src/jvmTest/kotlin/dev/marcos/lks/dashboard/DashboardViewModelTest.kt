@@ -74,12 +74,12 @@ class DashboardViewModelTest {
             val viewModel: DashboardViewModel = koinApp.koin.get()
 
             repoBlock.await()
-            assertTrue(viewModel.isRefreshing)
+            assertTrue(viewModel.uiState.value.isRefreshing)
 
             repoCanFinish.complete(Unit)
             runCurrent()
 
-            assertFalse(viewModel.isRefreshing)
+            assertFalse(viewModel.uiState.value.isRefreshing)
             assertEquals(1, repo.fetchCalls)
 
             viewModel.stop()

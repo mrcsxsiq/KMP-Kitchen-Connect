@@ -6,27 +6,36 @@ import dev.marcos.lks.data.model.MenuItem
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderItem
 import dev.marcos.lks.data.model.OrderStatus
-import dev.marcos.lks.data.repositories.OrderHistoryRepository
 import dev.marcos.lks.data.repositories.OrderHistoryRepositoryApi
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class MakeOrderViewModel(
-    private val repository: OrderHistoryRepositoryApi = OrderHistoryRepository()
-) : ViewModel() {
+data class MakeOrderUiState(
+    val menuItems: List<MenuItem> = emptyList()
+)
 
-    val menuItems: StateFlow<List<MenuItem>> = repository.menuItems
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+class MakeOrderViewModel(
+    private val repository: OrderHistoryRepositoryApi
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(MakeOrderUiState())
+    val uiState: StateFlow<MakeOrderUiState> = _uiState.asStateFlow()
 
     init {
+        observeMenuItems()
         fetchMenu()
+    }
+
+    private fun observeMenuItems() {
+        viewModelScope.launch {
+            repository.menuItems.collect { items ->
+                _uiState.update { it.copy(menuItems = items) }
+            }
+        }
     }
 
     private fun fetchMenu() {

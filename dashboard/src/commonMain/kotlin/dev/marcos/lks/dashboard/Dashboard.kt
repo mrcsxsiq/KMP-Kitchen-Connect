@@ -56,8 +56,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DashboardScreen(viewModel: DashboardViewModel = koinViewModel()) {
-    val orders by viewModel.orders.collectAsStateWithLifecycle()
-    val isRefreshing = viewModel.isRefreshing
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val orders = uiState.orders
+    val isRefreshing = uiState.isRefreshing
 
     Box(modifier = Modifier.fillMaxSize().background(LightGray)) {
         Column(

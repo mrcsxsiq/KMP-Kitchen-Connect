@@ -54,9 +54,10 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderHistory(viewModel: OrderHistoryViewModel = koinViewModel()) {
-    val orders by viewModel.orders.collectAsStateWithLifecycle()
-    val isRefreshing = viewModel.isRefreshing
-    val errorMessage = viewModel.errorMessage
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val orders = uiState.orders
+    val isRefreshing = uiState.isRefreshing
+    val errorMessage = uiState.errorMessage
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,

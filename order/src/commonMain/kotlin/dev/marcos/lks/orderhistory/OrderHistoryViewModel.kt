@@ -1,38 +1,40 @@
 package dev.marcos.lks.orderhistory
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.marcos.lks.data.model.Order
-import dev.marcos.lks.data.repositories.OrderHistoryRepository
 import dev.marcos.lks.data.repositories.OrderHistoryRepositoryApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class OrderHistoryUiState(
+    val orders: List<Order> = emptyList(),
+    val isRefreshing: Boolean = false,
+    val errorMessage: String? = null
+)
+
 class OrderHistoryViewModel(
-    private val repository: OrderHistoryRepositoryApi = OrderHistoryRepository()
+    private val repository: OrderHistoryRepositoryApi
 ) : ViewModel() {
-
-    var isRefreshing by mutableStateOf(false)
-        private set
-
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
-
-    val orders: StateFlow<List<Order>> = repository.orders
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _uiState = MutableStateFlow(OrderHistoryUiState())
+    val uiState: StateFlow<OrderHistoryUiState> = _uiState.asStateFlow()
 
     init {
+        observeOrders()
         startPolling()
+    }
+
+    private fun observeOrders() {
+        viewModelScope.launch {
+            repository.orders.collect { orders ->
+                _uiState.update { it.copy(orders = orders) }
+            }
+        }
     }
 
     private fun startPolling() {
@@ -46,14 +48,13 @@ class OrderHistoryViewModel(
 
     fun refresh() {
         viewModelScope.launch {
-            isRefreshing = true
-            errorMessage = null
+            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
             try {
                 repository.fetchHistoryOrders()
             } catch (e: Exception) {
-                errorMessage = "Falha ao carregar o histórico. Verifique sua conexão."
+                _uiState.update { it.copy(errorMessage = "Falha ao carregar o histórico. Verifique sua conexão.") }
             } finally {
-                isRefreshing = false
+                _uiState.update { it.copy(isRefreshing = false) }
             }
         }
     }

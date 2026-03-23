@@ -49,7 +49,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MakeOrderScreen(viewModel: MakeOrderViewModel = koinViewModel()) {
-    val menuItems by viewModel.menuItems.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val menuItems = uiState.menuItems
 
     var itemToOrder by remember { mutableStateOf<MenuItem?>(null) }
     var showDialog by remember { mutableStateOf(false) }

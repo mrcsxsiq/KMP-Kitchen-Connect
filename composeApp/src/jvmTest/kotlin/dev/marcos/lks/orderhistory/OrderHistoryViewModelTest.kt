@@ -71,8 +71,8 @@ class OrderHistoryViewModelTest {
 
             runCurrent()
 
-            assertFalse(viewModel.isRefreshing)
-            assertNull(viewModel.errorMessage)
+            assertFalse(viewModel.uiState.value.isRefreshing)
+            assertNull(viewModel.uiState.value.errorMessage)
 
             viewModel.stop()
         } finally {
@@ -102,10 +102,10 @@ class OrderHistoryViewModelTest {
 
             runCurrent()
 
-            assertFalse(viewModel.isRefreshing)
+            assertFalse(viewModel.uiState.value.isRefreshing)
             assertEquals(
                 "Falha ao carregar o histórico. Verifique sua conexão.",
-                viewModel.errorMessage
+                viewModel.uiState.value.errorMessage
             )
 
             viewModel.stop()
@@ -140,13 +140,13 @@ class OrderHistoryViewModelTest {
 
             started.await()
 
-            assertTrue(viewModel.isRefreshing)
+            assertTrue(viewModel.uiState.value.isRefreshing)
 
             finish.complete(Unit)
             runCurrent()
 
-            assertFalse(viewModel.isRefreshing)
-            assertNull(viewModel.errorMessage)
+            assertFalse(viewModel.uiState.value.isRefreshing)
+            assertNull(viewModel.uiState.value.errorMessage)
 
             viewModel.stop()
         } finally {
