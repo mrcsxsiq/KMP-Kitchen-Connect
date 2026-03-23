@@ -24,3 +24,10 @@ data class OrderItem(
     val name: String,
     val note: String? = null
 )
+
+@Serializable
+data class MenuItem(
+    val name: String,
+    val description: String,
+    val price: String
+)

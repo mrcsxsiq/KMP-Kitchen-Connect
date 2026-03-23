@@ -52,9 +52,11 @@ fun OrderHistory(viewModel: OrderHistoryViewModel = viewModel { OrderHistoryView
                         viewModel.refresh()
                     }
                 }
+
                 groupedOrders.isEmpty() -> {
                     EmptyState()
                 }
+
                 else -> {
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -72,7 +74,12 @@ fun OrderHistory(viewModel: OrderHistoryViewModel = viewModel { OrderHistoryView
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.TableBar, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color(0xFF475569))
+                                        Icon(
+                                            Icons.Default.TableBar,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp),
+                                            tint = Color(0xFF475569)
+                                        )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(table.uppercase(), fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
                                     }
@@ -280,14 +287,15 @@ fun HistoryOrderCard(order: Order, onAction: () -> Unit) {
                     Text(order.items.firstOrNull()?.name ?: "", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     if (order.items.size > 1 || order.items.firstOrNull()?.note != null) {
                         Text(
-                            "+ " + (order.items.drop(1).joinToString(", ") { it.name }.ifEmpty { order.items.firstOrNull()?.note ?: "" }),
+                            "+ " + (order.items.drop(1).joinToString(", ") { it.name }
+                                .ifEmpty { order.items.firstOrNull()?.note ?: "" }),
                             color = Color.Gray,
                             fontSize = 12.sp
                         )
                     }
                 }
                 Surface(
-                    color = when(order.status) {
+                    color = when (order.status) {
                         OrderStatus.PREPARING -> Color(0xFFCFFAFE)
                         OrderStatus.WAITING -> Color(0xFFFFEDD5)
                         OrderStatus.READY -> Color(0xFFDCFCE7)
@@ -296,7 +304,7 @@ fun HistoryOrderCard(order: Order, onAction: () -> Unit) {
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
-                        when(order.status) {
+                        when (order.status) {
                             OrderStatus.PREPARING -> "EM PREPARO"
                             OrderStatus.WAITING -> "AGUARDANDO"
                             OrderStatus.READY -> "PRONTO"
@@ -305,7 +313,7 @@ fun HistoryOrderCard(order: Order, onAction: () -> Unit) {
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = when(order.status) {
+                        color = when (order.status) {
                             OrderStatus.PREPARING -> Color(0xFF0891B2)
                             OrderStatus.WAITING -> Color(0xFFB45309)
                             OrderStatus.READY -> Color(0xFF166534)
@@ -314,16 +322,21 @@ fun HistoryOrderCard(order: Order, onAction: () -> Unit) {
                     )
                 }
             }
-            
+
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color(0xFFF1F5F9))
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Timer, contentDescription = null, modifier = Modifier.size(16.dp), tint = if (order.isLate) Color.Red else Color(0xFF0F766E))
+                    Icon(
+                        Icons.Default.Timer,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = if (order.isLate) Color.Red else Color(0xFF0F766E)
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         "${order.time} min",
@@ -332,25 +345,8 @@ fun HistoryOrderCard(order: Order, onAction: () -> Unit) {
                         color = if (order.isLate) Color.Red else Color(0xFF1E293B)
                     )
                 }
-                
-                Button(
-                    onClick = onAction,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2E8F0), contentColor = Color(0xFF1E293B)),
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text(
-                        when(order.status) {
-                            OrderStatus.WAITING -> "Iniciar"
-                            OrderStatus.PREPARING -> "Pronto"
-                            OrderStatus.READY -> "Entregar"
-                            else -> "Detalhes"
-                        },
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+
+
             }
         }
     }

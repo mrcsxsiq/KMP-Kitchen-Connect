@@ -15,30 +15,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.marcos.lks.MenuItem
 import dev.marcos.lks.OrderItem
-
-data class MenuItem(
-    val name: String,
-    val description: String,
-    val price: String,
-    val icon: ImageVector
-)
 
 @Composable
 fun MakeOrderScreen(viewModel: MakeOrderViewModel = viewModel { MakeOrderViewModel() }) {
-    val menuItems = listOf(
-        MenuItem("Smash Burger Deluxe", "Blend especial, queijo, bacon e molho", "R$ 32,90", Icons.Default.Restaurant),
-        MenuItem("Pizza Margherita", "Molho de tomate, mussarela e manjericão", "R$ 45,00", Icons.Default.Restaurant),
-        MenuItem("Salada Caesar", "Alface, croutons, frango e molho especial", "R$ 28,50", Icons.Default.Restaurant),
-        MenuItem("Batata Trufada", "Batatas fritas com azeite de trufas", "R$ 22,00", Icons.Default.Restaurant),
-        MenuItem("Coca-Cola Zero", "Lata 350ml bem gelada", "R$ 6,00", Icons.Default.Restaurant)
-    )
-
+    val menuItems by viewModel.menuItems.collectAsStateWithLifecycle()
+    
     var itemToOrder by remember { mutableStateOf<MenuItem?>(null) }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -89,14 +77,20 @@ fun MakeOrderScreen(viewModel: MakeOrderViewModel = viewModel { MakeOrderViewMod
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            items(menuItems) { item ->
-                MenuCard(item) {
-                    itemToOrder = item
-                    showDialog = true
+        if (menuItems.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = Color(0xFF0EA5E9))
+            }
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                items(menuItems) { item ->
+                    MenuCard(item) {
+                        itemToOrder = item
+                        showDialog = true
+                    }
                 }
             }
         }
@@ -124,7 +118,7 @@ fun MenuCard(item: MenuItem, onClick: () -> Unit) {
                     .background(Color(0xFFF1F5F9)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(item.icon, contentDescription = null, tint = Color(0xFF0EA5E9))
+                Icon(Icons.Default.Restaurant, contentDescription = null, tint = Color(0xFF0EA5E9))
             }
 
             Spacer(modifier = Modifier.width(16.dp))

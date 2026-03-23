@@ -24,12 +24,10 @@ class DashboardRepository {
             InMemoryDatabase.updateOrders(response)
         } catch (e: Exception) {
             e.printStackTrace()
-            // Em caso de erro, o InMemoryDatabase mantém o estado atual ou pode ser inicializado
         }
     }
 
     suspend fun updateOrderStatus(orderId: String, newStatus: OrderStatus) {
-        // Atualiza localmente no banco em memória imediatamente
         InMemoryDatabase.updateStatus(orderId, newStatus)
 
         try {

@@ -3,15 +3,16 @@ package dev.marcos.lks
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-/**
- * Banco de dados em memória para centralizar o estado dos pedidos no CommonMain.
- * Isso permite que diferentes repositórios compartilhem a mesma fonte de verdade.
- */
 object InMemoryDatabase {
     val orders = MutableStateFlow<List<Order>>(emptyList())
+    val menuItems = MutableStateFlow<List<MenuItem>>(emptyList())
 
     fun updateOrders(newOrders: List<Order>) {
         orders.value = newOrders
+    }
+
+    fun updateMenuItems(items: List<MenuItem>) {
+        menuItems.value = items
     }
 
     fun addOrder(order: Order) {

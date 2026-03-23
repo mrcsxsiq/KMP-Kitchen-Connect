@@ -34,6 +34,14 @@ val serverOrders = MutableStateFlow<List<Order>>(listOf(
     Order("#870", "Mesa 01", listOf(OrderItem(1, "Bife de Ancho")), "12:45", OrderStatus.DELIVERED, "CONCLUÍDO")
 ))
 
+val serverMenu = listOf(
+    MenuItem("Smash Burger Deluxe", "Blend especial, queijo, bacon e molho", "R$ 32,90"),
+    MenuItem("Pizza Margherita", "Molho de tomate, mussarela e manjericão", "R$ 45,00"),
+    MenuItem("Salada Caesar", "Alface, croutons, frango e molho especial", "R$ 28,50"),
+    MenuItem("Batata Trufada", "Batatas fritas com azeite de trufas", "R$ 22,00"),
+    MenuItem("Coca-Cola Zero", "Lata 350ml bem gelada", "R$ 6,00")
+)
+
 fun main() {
     val scope = CoroutineScope(Dispatchers.Default)
 
@@ -50,6 +58,11 @@ fun main() {
                 allowHeader(HttpHeaders.ContentType)
             }
             routing {
+                // Endpoint para o Cardápio
+                get("/menu") {
+                    call.respond(serverMenu)
+                }
+
                 // Endpoint para o Dashboard (apenas pedidos ativos)
                 get("/dashboard-orders") {
                     val activeOrders = serverOrders.value
@@ -107,7 +120,7 @@ fun main() {
 
         Window(
             onCloseRequest = ::exitApplication,
-            title = "Central de Comandos - Servidor Ativo",
+            title = "KMP Kitchen Connect",
             state = mainWindowState
         ) {
             Dashboard()
