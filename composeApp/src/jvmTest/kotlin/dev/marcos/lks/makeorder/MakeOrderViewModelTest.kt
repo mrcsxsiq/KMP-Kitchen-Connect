@@ -26,6 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 private suspend fun ViewModel.stop() {
     val job = viewModelScope.coroutineContext[Job] ?: return
@@ -57,6 +58,7 @@ private class FakeOrderHistoryRepository(
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MakeOrderViewModelTest {
     @Test
     fun `Given fake repository when viewmodel is created then fetchMenu called once`() = runTest {
@@ -84,6 +86,7 @@ class MakeOrderViewModelTest {
             Dispatchers.resetMain()
         }
     }
+
 
     @Test
     fun `Given menu items are emitted then viewmodel exposes them`() = runTest {

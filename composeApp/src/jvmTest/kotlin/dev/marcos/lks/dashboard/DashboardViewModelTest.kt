@@ -22,6 +22,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 private suspend fun ViewModel.stop() {
     val job = viewModelScope.coroutineContext[Job] ?: return
@@ -47,6 +48,7 @@ private class FakeDashboardRepository(
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DashboardViewModelTest {
     @Test
     fun `Given blocked refresh when viewmodel starts then isRefreshing true and then false`() = runTest {

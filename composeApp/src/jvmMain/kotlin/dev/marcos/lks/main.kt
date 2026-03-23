@@ -30,23 +30,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.awt.Toolkit
 
-val serverOrders = MutableStateFlow<List<Order>>(listOf(
-    Order(
-        "#882",
-        "Mesa 01",
-        listOf(OrderItem(2, "Smash Burger Deluxe", "Sem Cebola")),
-        "18m",
-        OrderStatus.WAITING,
-        "ATRASADO",
-        true
-    ),
-    Order("#884", "Mesa 01", listOf(OrderItem(1, "Salada Caesar Especial")), "04m", OrderStatus.WAITING, "AGUARDANDO"),
-    Order("#879", "Mesa 01", listOf(OrderItem(1, "Salmão Grelhado", "AO PONTO")), "09m", OrderStatus.PREPARING, "COZINHANDO"),
-    Order("#870", "Mesa 01", listOf(OrderItem(1, "Bife de Ancho")), "12:45", OrderStatus.DELIVERED, "CONCLUÍDO")
-))
+val serverOrders = MutableStateFlow<List<Order>>(
+    listOf(
+        Order("#882", "Mesa 01", listOf(OrderItem(2, "Smash Burger", "Sem Molho")), "18m", OrderStatus.WAITING, "ATRASADO", true),
+        Order("#884", "Mesa 01", listOf(OrderItem(1, "Salada Caesar Especial")), "04m", OrderStatus.WAITING, "AGUARDANDO"),
+        Order("#879", "Mesa 01", listOf(OrderItem(1, "Salmão Grelhado", "AO PONTO")), "09m", OrderStatus.PREPARING, "COZINHANDO"),
+        Order("#870", "Mesa 01", listOf(OrderItem(1, "Bife de Ancho")), "12:45", OrderStatus.DELIVERED, "CONCLUÍDO")
+    )
+)
 
 val serverMenu = listOf(
-    MenuItem("Smash Burger Deluxe", "Blend especial, queijo, bacon e molho", "R$ 32,90"),
+    MenuItem("Smash Burger", "Blend especial, queijo, bacon e molho", "R$ 32,90"),
     MenuItem("Pizza Margherita", "Molho de tomate, mussarela e manjericão", "R$ 45,00"),
     MenuItem("Salada Caesar", "Alface, croutons, frango e molho especial", "R$ 28,50"),
     MenuItem("Batata Trufada", "Batatas fritas com azeite de trufas", "R$ 22,00"),
@@ -98,7 +92,7 @@ fun main() {
                         val params = call.receive<Map<String, String>>()
                         val id = params["id"]
                         val statusName = params["status"]
-                        
+
                         if (id != null && statusName != null) {
                             val newStatus = OrderStatus.valueOf(statusName)
                             serverOrders.update { list ->

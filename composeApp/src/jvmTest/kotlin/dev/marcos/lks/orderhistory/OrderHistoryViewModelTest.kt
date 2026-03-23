@@ -22,6 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 private suspend fun ViewModel.stop() {
     val job = viewModelScope.coroutineContext[Job] ?: return
@@ -51,6 +52,7 @@ private class FakeOrderHistoryRepository(
     override suspend fun addOrder(order: Order) = Unit
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class OrderHistoryViewModelTest {
     @Test
     fun `Given successful fetch when refresh completes then isRefreshing false and errorMessage is null`() = runTest {
