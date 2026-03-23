@@ -33,3 +33,6 @@ plugins {
 }
 
 include(":composeApp")
+include(":common")
+include(":dashboard")
+include(":order")
