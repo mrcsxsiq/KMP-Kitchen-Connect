@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -58,6 +62,7 @@ fun OrderHistory(viewModel: OrderHistoryViewModel = koinViewModel()) {
     val orders = uiState.orders
     val isRefreshing = uiState.isRefreshing
     val errorMessage = uiState.errorMessage
+    val errorDetails = uiState.errorDetails
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -72,11 +77,24 @@ fun OrderHistory(viewModel: OrderHistoryViewModel = koinViewModel()) {
             Spacer(modifier = Modifier.height(24.dp))
 
             val groupedOrders = orders.filter { it.status != OrderStatus.DELIVERED }.groupBy { it.table }
+            val hasError =
+                !errorMessage.isNullOrBlank() || !errorDetails.isNullOrBlank()
 
             when {
-                errorMessage != null -> {
-                    ErrorState(message = errorMessage) {
-                        viewModel.refresh()
+                hasError -> {
+                    ErrorState(
+                        summary = errorMessage.orEmpty().ifBlank { "Falha ao carregar o histórico." },
+                        details = errorDetails,
+                        onRetry = { viewModel.refresh() },
+                    )
+                }
+
+                isRefreshing && groupedOrders.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator(color = Color(0xFF0EA5E9))
                     }
                 }
 
@@ -160,12 +178,16 @@ fun EmptyState() {
 }
 
 @Composable
-fun ErrorState(message: String, onRetry: () -> Unit) {
+fun ErrorState(
+    summary: String,
+    details: String? = null,
+    onRetry: () -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(32.dp))
         Icon(
             Icons.Default.ErrorOutline,
             contentDescription = null,
@@ -180,19 +202,44 @@ fun ErrorState(message: String, onRetry: () -> Unit) {
             color = Color(0xFF475569)
         )
         Text(
-            message,
+            summary,
             fontSize = 14.sp,
-            color = Color.Gray,
+            color = Color(0xFF475569),
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 32.dp)
+            modifier = Modifier.padding(horizontal = 12.dp)
         )
+        if (!details.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Detalhes técnicos",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF64748B),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                details,
+                fontSize = 11.sp,
+                color = Color(0xFF64748B),
+                lineHeight = 14.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 280.dp)
+                    .verticalScroll(rememberScrollState())
+                    .background(Color(0xFFF1F5F9), RoundedCornerShape(8.dp))
+                    .padding(12.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0EA5E9))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0EA5E9)),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Tentar Novamente")
+            Text("Tentar novamente")
         }
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 

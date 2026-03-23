@@ -14,30 +14,18 @@ class OrderHistoryRepository(
     override val menuItems: Flow<List<MenuItem>> = inMemoryDatabase.menuItems
 
     override suspend fun fetchHistoryOrders() {
-        try {
-            val response = api.getHistoryOrders()
-            inMemoryDatabase.updateOrders(response)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        val response = api.getHistoryOrders()
+        inMemoryDatabase.updateOrders(response)
     }
 
     override suspend fun fetchMenu() {
-        try {
-            val response = api.getMenu()
-            inMemoryDatabase.updateMenuItems(response)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        val response = api.getMenu()
+        inMemoryDatabase.updateMenuItems(response)
     }
 
     override suspend fun addOrder(order: Order) {
         inMemoryDatabase.addOrder(order)
-        try {
-            api.addOrder(order)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        api.addOrder(order)
     }
 }
 

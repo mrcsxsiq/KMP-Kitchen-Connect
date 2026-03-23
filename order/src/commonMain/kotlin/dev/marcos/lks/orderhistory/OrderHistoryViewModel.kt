@@ -4,18 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.repositories.OrderHistoryRepositoryApi
+import dev.marcos.lks.util.formatDetailsForUser
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class OrderHistoryUiState(
     val orders: List<Order> = emptyList(),
     val isRefreshing: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val errorDetails: String? = null,
 )
 
 class OrderHistoryViewModel(
@@ -40,7 +42,11 @@ class OrderHistoryViewModel(
     private fun startPolling() {
         viewModelScope.launch {
             while (true) {
-                refresh()
+                try {
+                    performHistoryRefresh()
+                } catch (e: CancellationException) {
+                    throw e
+                }
                 delay(5000)
             }
         }
@@ -48,14 +54,35 @@ class OrderHistoryViewModel(
 
     fun refresh() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
             try {
-                repository.fetchHistoryOrders()
-            } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = "Falha ao carregar o histórico. Verifique sua conexão.") }
-            } finally {
-                _uiState.update { it.copy(isRefreshing = false) }
+                performHistoryRefresh()
+            } catch (_: CancellationException) {
+                // ignorar cancelamento (ex.: saída da tela)
             }
+        }
+    }
+
+    private suspend fun performHistoryRefresh() {
+        _uiState.update {
+            it.copy(
+                isRefreshing = true,
+                errorMessage = null,
+                errorDetails = null,
+            )
+        }
+        try {
+            repository.fetchHistoryOrders()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            _uiState.update {
+                it.copy(
+                    errorMessage = "Falha ao carregar o histórico.",
+                    errorDetails = e.formatDetailsForUser(),
+                )
+            }
+        } finally {
+            _uiState.update { it.copy(isRefreshing = false) }
         }
     }
 }

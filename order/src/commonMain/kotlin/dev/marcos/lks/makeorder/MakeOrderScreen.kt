@@ -28,9 +28,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,17 +45,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.marcos.lks.data.model.MenuItem
 import dev.marcos.lks.data.model.OrderItem
+import dev.marcos.lks.orderhistory.ErrorState
 import org.koin.compose.viewmodel.koinViewModel
+
+private const val ORDER_SNACK_SUCCESS = "Pedido enviado com sucesso."
+private const val ORDER_SNACK_FAILURE = "Não foi possível enviar o pedido."
 
 @Composable
 fun MakeOrderScreen(viewModel: MakeOrderViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val menuItems = uiState.menuItems
+    val isLoadingMenu = uiState.isLoadingMenu
+    val menuErrorTitle = uiState.menuErrorTitle
+    val menuErrorDetails = uiState.menuErrorDetails
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(viewModel) {
+        viewModel.orderSubmitSnackEvents.collect { event ->
+            val message = when (event) {
+                OrderSubmitSnackEvent.Success -> ORDER_SNACK_SUCCESS
+                OrderSubmitSnackEvent.Failure -> ORDER_SNACK_FAILURE
+            }
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
     var itemToOrder by remember { mutableStateOf<MenuItem?>(null) }
     var showDialog by remember { mutableStateOf(false) }
@@ -82,39 +106,90 @@ fun MakeOrderScreen(viewModel: MakeOrderViewModel = koinViewModel()) {
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
-            .padding(16.dp)
-    ) {
-        Text(
-            "Cardápio Digital",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF1E293B)
-        )
-        Text(
-            "Selecione um item para realizar o pedido",
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        if (menuItems.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Color(0xFF0EA5E9))
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                val isSuccess = data.visuals.message == ORDER_SNACK_SUCCESS
+                if (isSuccess) {
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = Color(0xFF16A34A),
+                        contentColor = Color.White,
+                        actionColor = Color.White,
+                    )
+                } else {
+                    Snackbar(snackbarData = data)
+                }
             }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 16.dp)
-            ) {
-                items(menuItems) { item ->
-                    MenuCard(item) {
-                        itemToOrder = item
-                        showDialog = true
+        },
+        containerColor = Color(0xFFF8FAFC),
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
+            Text(
+                "Cardápio Digital",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1E293B)
+            )
+            Text(
+                "Selecione um item para realizar o pedido",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            val menuHasError =
+                !menuErrorTitle.isNullOrBlank() || !menuErrorDetails.isNullOrBlank()
+
+            when {
+                menuHasError -> {
+                    ErrorState(
+                        summary = menuErrorTitle.orEmpty().ifBlank { "Não foi possível carregar o cardápio" },
+                        details = menuErrorDetails,
+                        onRetry = { viewModel.retryLoadMenu() },
+                    )
+                }
+                isLoadingMenu -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = Color(0xFF0EA5E9))
+                    }
+                }
+                menuItems.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                "Cardápio vazio",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF475569),
+                            )
+                            Text(
+                                "Não há itens para exibir no momento.",
+                                fontSize = 14.sp,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 24.dp)
+                            )
+                        }
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(menuItems) { item ->
+                            MenuCard(item) {
+                                itemToOrder = item
+                                showDialog = true
+                            }
+                        }
                     }
                 }
             }

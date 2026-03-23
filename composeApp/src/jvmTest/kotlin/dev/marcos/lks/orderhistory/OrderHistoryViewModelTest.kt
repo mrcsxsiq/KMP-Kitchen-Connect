@@ -75,6 +75,7 @@ class OrderHistoryViewModelTest {
 
             assertFalse(viewModel.uiState.value.isRefreshing)
             assertNull(viewModel.uiState.value.errorMessage)
+            assertNull(viewModel.uiState.value.errorDetails)
 
             viewModel.stop()
         } finally {
@@ -106,9 +107,10 @@ class OrderHistoryViewModelTest {
 
             assertFalse(viewModel.uiState.value.isRefreshing)
             assertEquals(
-                "Falha ao carregar o histórico. Verifique sua conexão.",
+                "Falha ao carregar o histórico.",
                 viewModel.uiState.value.errorMessage
             )
+            assertTrue(viewModel.uiState.value.errorDetails?.contains("boom") == true)
 
             viewModel.stop()
         } finally {
@@ -149,6 +151,7 @@ class OrderHistoryViewModelTest {
 
             assertFalse(viewModel.uiState.value.isRefreshing)
             assertNull(viewModel.uiState.value.errorMessage)
+            assertNull(viewModel.uiState.value.errorDetails)
 
             viewModel.stop()
         } finally {
