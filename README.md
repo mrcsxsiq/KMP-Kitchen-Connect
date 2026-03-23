@@ -1,8 +1,7 @@
 
-
 <img src="assets/header.png">
 
-A Kotlin Multiplatform (KMP) application designed to simulate a **Kitchen Display System (KDS)** with communication between devices.
+A **Kotlin Multiplatform (KMP)** application designed to simulate a **Kitchen Display System (KDS)** with communication between devices.
 
 This project enables two roles:
 - 🧑‍🍳 **Kitchen Mode** – receives and manages orders in a Kanban-style board
