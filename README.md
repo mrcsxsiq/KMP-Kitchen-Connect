@@ -20,7 +20,7 @@ This project enables two roles:
 ---
 ## Demo
 
-<video src="assets/video.mp4">
+In progress
 
 ---
 
