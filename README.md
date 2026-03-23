@@ -103,6 +103,7 @@ Open in Android Studio and run normally.
 - [ ] Persistent storage (Room / SQLDelight)
 - [ ] Logs
 - [ ] Notifications
+- [ ] WebSockets 
 - [x] ~Modules~ Done
 
 ---
