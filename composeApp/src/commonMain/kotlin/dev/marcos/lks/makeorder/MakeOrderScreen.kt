@@ -19,12 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.marcos.lks.data.model.MenuItem
 import dev.marcos.lks.data.model.OrderItem
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun MakeOrderScreen(viewModel: MakeOrderViewModel = viewModel { MakeOrderViewModel() }) {
+fun MakeOrderScreen(viewModel: MakeOrderViewModel = koinViewModel()) {
     val menuItems by viewModel.menuItems.collectAsStateWithLifecycle()
     
     var itemToOrder by remember { mutableStateOf<MenuItem?>(null) }

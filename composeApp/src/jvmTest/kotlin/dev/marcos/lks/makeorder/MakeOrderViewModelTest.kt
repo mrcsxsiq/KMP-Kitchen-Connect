@@ -7,6 +7,9 @@ import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderItem
 import dev.marcos.lks.data.model.OrderStatus
 import dev.marcos.lks.data.repositories.OrderHistoryRepositoryApi
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import kotlinx.coroutines.async
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -60,19 +63,24 @@ class MakeOrderViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: um repositório fake que registra chamadas.
             val repo = FakeOrderHistoryRepository()
 
-            // Quando: instanciamos o ViewModel.
-            val viewModel = MakeOrderViewModel(repository = repo)
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<OrderHistoryRepositoryApi> { repo }
+                        factory { MakeOrderViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: MakeOrderViewModel = koinApp.koin.get()
 
-            // E: processamos as coroutines agendadas pelo init.
             advanceUntilIdle()
 
-            // Então: deve ter chamado fetchMenu uma vez.
             assertEquals(1, repo.fetchMenuCalls)
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }
@@ -82,16 +90,22 @@ class MakeOrderViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: um repositório fake e um ViewModel.
             val repo = FakeOrderHistoryRepository()
-            val viewModel = MakeOrderViewModel(repository = repo)
 
-            // Quando: começamos a observar o flow de menuItems.
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<OrderHistoryRepositoryApi> { repo }
+                        factory { MakeOrderViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: MakeOrderViewModel = koinApp.koin.get()
+
             val received = async {
                 viewModel.menuItems.first { it.isNotEmpty() }
             }
 
-            // E: emitimos dados no repositório.
             repo.menuItems.value = listOf(
                 MenuItem(name = "Smash", description = "Sem cebola", price = "R$ 25,00")
             )
@@ -99,12 +113,12 @@ class MakeOrderViewModelTest {
             advanceUntilIdle()
             val menu = received.await()
 
-            // Então: o ViewModel deve refletir os itens.
             assertEquals(1, menu.size)
             assertEquals("Smash", menu.first().name)
 
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }
@@ -114,20 +128,25 @@ class MakeOrderViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: um repositório fake.
             val repo = FakeOrderHistoryRepository()
-            val viewModel = MakeOrderViewModel(repository = repo)
-            advanceUntilIdle() // let init fetchMenu run
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<OrderHistoryRepositoryApi> { repo }
+                        factory { MakeOrderViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: MakeOrderViewModel = koinApp.koin.get()
+            advanceUntilIdle()
 
             val items = listOf(
                 OrderItem(quantity = 2, name = "Smash Burger Deluxe", note = "Sem Cebola")
             )
 
-            // Quando: chamamos createOrder com uma mesa e itens.
             viewModel.createOrder(table = "Mesa 12", items = items)
             advanceUntilIdle()
 
-            // Então: o ViewModel deve delegar para o repositório com os campos esperados.
             assertEquals(1, repo.addOrderCalls)
             val order = assertNotNull(repo.lastAddedOrder)
 
@@ -144,6 +163,7 @@ class MakeOrderViewModelTest {
 
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }

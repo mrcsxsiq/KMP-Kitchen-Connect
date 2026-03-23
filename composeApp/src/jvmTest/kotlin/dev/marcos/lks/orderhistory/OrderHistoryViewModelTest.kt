@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import dev.marcos.lks.data.model.MenuItem
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.repositories.OrderHistoryRepositoryApi
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,20 +57,26 @@ class OrderHistoryViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: um repositório fake que retorna sucesso.
             val repo = FakeOrderHistoryRepository(fetchHistoryOrdersImpl = {})
 
-            // Quando: instanciamos o ViewModel.
-            val viewModel = OrderHistoryViewModel(repository = repo)
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<OrderHistoryRepositoryApi> { repo }
+                        factory { OrderHistoryViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: OrderHistoryViewModel = koinApp.koin.get()
 
             runCurrent()
 
-            // Então: isRefreshing deve terminar em false e errorMessage deve ficar null.
             assertFalse(viewModel.isRefreshing)
             assertNull(viewModel.errorMessage)
 
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }
@@ -77,17 +86,22 @@ class OrderHistoryViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: um repositório fake que falha ao carregar o histórico.
             val repo = FakeOrderHistoryRepository(fetchHistoryOrdersImpl = {
                 throw RuntimeException("boom")
             })
 
-            // Quando: instanciamos o ViewModel.
-            val viewModel = OrderHistoryViewModel(repository = repo)
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<OrderHistoryRepositoryApi> { repo }
+                        factory { OrderHistoryViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: OrderHistoryViewModel = koinApp.koin.get()
 
             runCurrent()
 
-            // Então: errorMessage deve ser setado e isRefreshing deve terminar em false.
             assertFalse(viewModel.isRefreshing)
             assertEquals(
                 "Falha ao carregar o histórico. Verifique sua conexão.",
@@ -96,6 +110,7 @@ class OrderHistoryViewModelTest {
 
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }
@@ -105,7 +120,6 @@ class OrderHistoryViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: um repositório fake que bloqueia o refresh para testarmos o estado "em voo".
             val started = kotlinx.coroutines.CompletableDeferred<Unit>()
             val finish = kotlinx.coroutines.CompletableDeferred<Unit>()
 
@@ -114,24 +128,29 @@ class OrderHistoryViewModelTest {
                 finish.await()
             })
 
-            // Quando: instanciamos o ViewModel.
-            val viewModel = OrderHistoryViewModel(repository = repo)
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<OrderHistoryRepositoryApi> { repo }
+                        factory { OrderHistoryViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: OrderHistoryViewModel = koinApp.koin.get()
 
             started.await()
 
-            // Então: isRefreshing deve estar true enquanto o repositório ainda está bloqueado.
             assertTrue(viewModel.isRefreshing)
 
-            // Quando: liberamos o repositório e processamos as coroutines pendentes.
             finish.complete(Unit)
             runCurrent()
 
-            // Então: isRefreshing deve voltar para false e errorMessage deve ser null.
             assertFalse(viewModel.isRefreshing)
             assertNull(viewModel.errorMessage)
 
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }

@@ -21,13 +21,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderStatus
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderHistory(viewModel: OrderHistoryViewModel = viewModel { OrderHistoryViewModel() }) {
+fun OrderHistory(viewModel: OrderHistoryViewModel = koinViewModel()) {
     val orders by viewModel.orders.collectAsStateWithLifecycle()
     val isRefreshing = viewModel.isRefreshing
     val errorMessage = viewModel.errorMessage

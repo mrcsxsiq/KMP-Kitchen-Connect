@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderStatus
 import dev.marcos.lks.data.repositories.DashboardRepositoryApi
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +53,6 @@ class DashboardViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: uma chamada ao repositório bloqueada para conseguirmos inspecionar "in flight".
             val repoBlock = kotlinx.coroutines.CompletableDeferred<Unit>()
             val repoCanFinish = kotlinx.coroutines.CompletableDeferred<Unit>()
 
@@ -61,23 +63,28 @@ class DashboardViewModelTest {
                 }
             )
 
-            // Quando: instanciamos o ViewModel.
-            val viewModel = DashboardViewModel(repository = repo)
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<DashboardRepositoryApi> { repo }
+                        factory { DashboardViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: DashboardViewModel = koinApp.koin.get()
 
-            // Então: o flag deve ficar true enquanto o refresh está em andamento.
             repoBlock.await()
             assertTrue(viewModel.isRefreshing)
 
-            // Quando: liberamos o repositório e processamos as coroutines pendentes.
             repoCanFinish.complete(Unit)
             runCurrent()
 
-            // Então: o flag deve voltar para false.
             assertFalse(viewModel.isRefreshing)
             assertEquals(1, repo.fetchCalls)
 
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }
@@ -87,25 +94,29 @@ class DashboardViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: um repositório fake que conta quantas vezes o polling chama refresh.
             val repo = FakeDashboardRepository(fetchDashboardOrdersImpl = {})
 
-            // Quando: instanciamos o ViewModel (ele inicia o polling no init).
-            val viewModel = DashboardViewModel(repository = repo)
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<DashboardRepositoryApi> { repo }
+                        factory { DashboardViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: DashboardViewModel = koinApp.koin.get()
 
-            // Então: a primeira execução do polling deve acontecer.
-            runCurrent() // run first refresh started by polling loop
+            runCurrent()
             assertEquals(1, repo.fetchCalls)
 
-            // Quando: avançamos 5s para disparar o próximo loop.
             advanceTimeBy(5_000)
-            runCurrent() // run second refresh after delay
+            runCurrent()
 
-            // Então: deve ter executado novamente.
             assertEquals(2, repo.fetchCalls)
 
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }
@@ -115,23 +126,28 @@ class DashboardViewModelTest {
         val dispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(dispatcher)
         try {
-            // Dado: um repositório fake.
             val repo = FakeDashboardRepository(fetchDashboardOrdersImpl = {})
 
-            // Quando: instanciamos o ViewModel e deixamos o init começar/terminar.
-            val viewModel = DashboardViewModel(repository = repo)
+            val koinApp = startKoin {
+                modules(
+                    module {
+                        single<DashboardRepositoryApi> { repo }
+                        factory { DashboardViewModel(get()) }
+                    }
+                )
+            }
+            val viewModel: DashboardViewModel = koinApp.koin.get()
 
-            runCurrent() // allow init polling refresh to start/end (no time advance)
+            runCurrent()
 
-            // Quando: chamamos updateOrderStatus no ViewModel.
             viewModel.updateOrderStatus(orderId = "#1", newStatus = OrderStatus.READY)
             runCurrent()
 
-            // Então: o repositório deve ter recebido a atualização.
             assertEquals(listOf("#1" to OrderStatus.READY), repo.updateCalls)
 
             viewModel.stop()
         } finally {
+            stopKoin()
             Dispatchers.resetMain()
         }
     }

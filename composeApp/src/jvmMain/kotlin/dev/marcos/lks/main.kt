@@ -54,6 +54,8 @@ val serverMenu = listOf(
 )
 
 fun main() {
+    initKoin()
+
     val scope = CoroutineScope(Dispatchers.Default)
 
     scope.launch {

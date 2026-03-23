@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.marcos.lks.theme.Gray
 import dev.marcos.lks.theme.LightGray
 import dev.marcos.lks.theme.Mint
@@ -28,10 +27,11 @@ import dev.marcos.lks.theme.SkyBlue
 import dev.marcos.lks.theme.Teal
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderStatus
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun DashboardScreen(viewModel: DashboardViewModel = viewModel { DashboardViewModel() }) {
+fun DashboardScreen(viewModel: DashboardViewModel = koinViewModel()) {
     val orders by viewModel.orders.collectAsStateWithLifecycle()
     val isRefreshing = viewModel.isRefreshing
 
