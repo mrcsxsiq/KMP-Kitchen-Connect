@@ -38,14 +38,14 @@ The system is designed to work **without internet**, using local communication b
 [ Order Device ]  --->  [ Kitchen Display System ]
         (Client)              (Server)
 ```
+---
 
-### Key Technologies
+## Key Technologies
 
 - **Kotlin Multiplatform (KMP)**
 - **Ktor** for communication
 - **Kotlinx Serialization (JSON)**
 - **Compose Multiplatform** (UI)
-- **SQLite / Local Storage (planned/optional)**
 
 ---
 
