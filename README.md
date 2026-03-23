@@ -95,11 +95,11 @@ Open in Android Studio and run normally.
 
 ## Future Improvements
 
-- [] Authentication between devices
-- [] Persistent storage (Room / SQLDelight)
-- [] Logs
-- [] Notifications
-- [] Modules
+- [ ] Authentication between devices
+- [ ] Persistent storage (Room / SQLDelight)
+- [ ] Logs
+- [ ] Notifications
+- [ ] Modules
 
 ---
 
