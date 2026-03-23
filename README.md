@@ -10,12 +10,17 @@ This project enables two roles:
 
 ---
 
-## 🚀 Features
+## Features
 
 - Kotlin Multiplatform (Desktop, Android, Tablet-ready)
 - Peer-to-peer communication using Ktor + JSON
 - Real-time order updates
 - Kanban-style kitchen display (KDS) 
+
+---
+## Demo
+
+<video src="assets/video.mp4">
 
 ---
 
