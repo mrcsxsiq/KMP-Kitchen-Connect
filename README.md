@@ -14,7 +14,7 @@ This project enables two roles:
 - Kotlin Multiplatform (Desktop, Android, Tablet-ready)
 - Peer-to-peer communication using Ktor + JSON
 - Real-time order updates
-- Kanban-style kitchen display (KDS) 
+- Kanban-style kitchen display (KDS)
 
 ---
 ## Demo
@@ -47,7 +47,10 @@ The system is designed to work **without internet**, using local communication b
 
 | Module       | Description                                                     |
 |--------------|-----------------------------------------------------------------|
-| `composeApp` | Business logic, models, networking                              |
+| `common`     | Business logic, models, networking                              |
+| `dashboard`  | Dashboard KDS Feature                                           |
+| `order`      | Order Feature                                                   |
+| `composeApp` | Base application                                                |
 | `androidApp` | Android application                                             |
 | `jvmMain`    | Desktop application and Ktor server running inside Kitchen mode |
 
