@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.repositories.OrderHistoryRepository
+import dev.marcos.lks.data.repositories.OrderHistoryRepositoryApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class OrderHistoryViewModel(
-    private val repository: OrderHistoryRepository = OrderHistoryRepository()
+    private val repository: OrderHistoryRepositoryApi = OrderHistoryRepository()
 ) : ViewModel() {
 
     var isRefreshing by mutableStateOf(false)

@@ -5,7 +5,6 @@ import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderStatus
 import dev.marcos.lks.host
 import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
@@ -17,16 +16,16 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 
-class DashboardRepository {
-    val orders: Flow<List<Order>> = InMemoryDatabase.orders
+class DashboardRepository : DashboardRepositoryApi {
+    override val orders: Flow<List<Order>> = InMemoryDatabase.orders
 
     private val client = HttpClient {
-        HttpClientConfig.install(ContentNegotiation) {
+        install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
     }
 
-    suspend fun fetchDashboardOrders() {
+    override suspend fun fetchDashboardOrders() {
         try {
             val response: List<Order> = client.get("http://${host}:8080/dashboard-orders").body()
             InMemoryDatabase.updateOrders(response)
@@ -35,7 +34,7 @@ class DashboardRepository {
         }
     }
 
-    suspend fun updateOrderStatus(orderId: String, newStatus: OrderStatus) {
+    override suspend fun updateOrderStatus(orderId: String, newStatus: OrderStatus) {
         InMemoryDatabase.updateStatus(orderId, newStatus)
 
         try {
