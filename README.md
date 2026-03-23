@@ -51,6 +51,22 @@ The system is designed to work **without internet**, using local communication b
 
 ## Modules
 
+```mermaid
+flowchart TB
+  composeAppMobile["composeApp\n(Android • iOS)"]
+  composeAppDesktop["composeApp\n(JVM)"]
+  dashboard["dashboard\n(KDS)"]
+  order["order\n(pedido / histórico)"]
+  common["common\n(modelos • APIs • dados compartilhados)"]
+
+  composeAppDesktop --> dashboard
+  composeAppMobile --> order
+  composeAppDesktop --> common
+  composeAppMobile --> common
+  dashboard --> common
+  order --> common
+```
+
 | Module       | Description                                                       |
 |--------------|-------------------------------------------------------------------|
 | `common`     | Business logic, models, networking                                |
