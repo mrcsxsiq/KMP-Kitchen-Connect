@@ -102,7 +102,7 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "dev.marcos.lks.MainKt"
-        jvmArgs += listOf("-Dskiko.renderApi=SOFTWARE")
+//        jvmArgs += listOf("-Dskiko.renderApi=SOFTWARE")
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
