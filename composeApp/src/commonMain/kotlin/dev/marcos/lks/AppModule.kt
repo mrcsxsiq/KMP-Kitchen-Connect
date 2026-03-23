@@ -1,6 +1,7 @@
 package dev.marcos.lks
 
 import dev.marcos.lks.data.datasources.remote.DashboardApi
+import dev.marcos.lks.data.datasources.remote.InMemoryDatabase
 import dev.marcos.lks.data.datasources.remote.OrderHistoryApi
 import dev.marcos.lks.data.repositories.DashboardRepository
 import dev.marcos.lks.data.repositories.DashboardRepositoryApi
@@ -13,8 +14,9 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    single<DashboardRepositoryApi> { DashboardRepository(get()) }
-    single<OrderHistoryRepositoryApi> { OrderHistoryRepository(get<OrderHistoryApi>()) }
+    single { InMemoryDatabase() }
+    single<DashboardRepositoryApi> { DashboardRepository(get(), get()) }
+    single<OrderHistoryRepositoryApi> { OrderHistoryRepository(get<OrderHistoryApi>(), get()) }
     
     viewModel { DashboardViewModel(get()) }
     viewModel { MakeOrderViewModel(get()) }

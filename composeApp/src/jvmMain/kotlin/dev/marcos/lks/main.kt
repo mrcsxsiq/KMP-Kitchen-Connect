@@ -9,10 +9,12 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.marcos.lks.dashboard.DashboardScreen
+import dev.marcos.lks.data.datasources.remote.InMemoryDatabase
 import dev.marcos.lks.data.model.MenuItem
 import dev.marcos.lks.data.model.Order
 import dev.marcos.lks.data.model.OrderItem
 import dev.marcos.lks.data.model.OrderStatus
+import org.koin.core.context.GlobalContext
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -31,13 +33,12 @@ import kotlinx.coroutines.launch
 import java.awt.Toolkit
 
 val serverOrders = MutableStateFlow<List<Order>>(
-    listOf(
-        Order("#882", "Mesa 01", listOf(OrderItem(2, "Smash Burger", "Sem Molho")), "18m", OrderStatus.WAITING, "ATRASADO", true),
-        Order("#884", "Mesa 01", listOf(OrderItem(1, "Salada Caesar Especial")), "04m", OrderStatus.WAITING, "AGUARDANDO"),
-        Order("#879", "Mesa 01", listOf(OrderItem(1, "Salmão Grelhado", "AO PONTO")), "09m", OrderStatus.PREPARING, "COZINHANDO"),
-        Order("#870", "Mesa 01", listOf(OrderItem(1, "Bife de Ancho")), "12:45", OrderStatus.DELIVERED, "CONCLUÍDO")
-    )
+    listOf()
 )
+
+private fun syncJvmInMemoryOrdersFromServer(inMemoryDb: InMemoryDatabase) {
+    inMemoryDb.orders.value = serverOrders.value
+}
 
 val serverMenu = listOf(
     MenuItem("Smash Burger", "Blend especial, queijo, bacon e molho", "R$ 32,90"),
@@ -49,6 +50,8 @@ val serverMenu = listOf(
 
 fun main() {
     initKoin()
+    val inMemoryDb: InMemoryDatabase = GlobalContext.get().get()
+    syncJvmInMemoryOrdersFromServer(inMemoryDb)
 
     val scope = CoroutineScope(Dispatchers.Default)
 
@@ -81,6 +84,7 @@ fun main() {
                     try {
                         val newOrder = call.receive<Order>()
                         serverOrders.update { it + newOrder }
+                        syncJvmInMemoryOrdersFromServer(inMemoryDb)
                         call.respond(HttpStatusCode.Created, newOrder)
                     } catch (e: Exception) {
                         call.respond(HttpStatusCode.BadRequest, e.message ?: "Erro ao criar pedido")
@@ -98,6 +102,7 @@ fun main() {
                             serverOrders.update { list ->
                                 list.map { if (it.id == id) it.copy(status = newStatus) else it }
                             }
+                            syncJvmInMemoryOrdersFromServer(inMemoryDb)
                             call.respond(HttpStatusCode.OK)
                         } else {
                             call.respond(HttpStatusCode.BadRequest)

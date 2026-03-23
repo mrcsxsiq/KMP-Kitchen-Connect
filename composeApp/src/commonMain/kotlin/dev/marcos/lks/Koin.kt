@@ -7,4 +7,3 @@ fun initKoin() {
         modules(networkModule, appModule)
     }
 }
-

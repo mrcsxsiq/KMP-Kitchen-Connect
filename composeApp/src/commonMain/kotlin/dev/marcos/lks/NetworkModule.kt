@@ -6,6 +6,9 @@ import dev.marcos.lks.data.datasources.remote.OrderApi
 import dev.marcos.lks.data.datasources.remote.OrderHistoryApi
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
@@ -19,9 +22,16 @@ enum class HttpClientType {
 
 class HttpClientFactory {
     fun getClient(isAuthenticated: Boolean): Ktorfit {
+        val json = Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = true
+        }
         val httpClient = HttpClient {
             install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
+                json(json)
+            }
+            defaultRequest {
+                contentType(ContentType.Application.Json)
             }
         }
 

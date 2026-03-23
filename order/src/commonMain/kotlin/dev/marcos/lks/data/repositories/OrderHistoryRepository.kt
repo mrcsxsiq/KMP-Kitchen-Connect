@@ -7,15 +7,16 @@ import dev.marcos.lks.data.model.Order
 import kotlinx.coroutines.flow.Flow
 
 class OrderHistoryRepository(
-    private val api: OrderHistoryApi
+    private val api: OrderHistoryApi,
+    private val inMemoryDatabase: InMemoryDatabase,
 ) : OrderHistoryRepositoryApi {
-    override val orders: Flow<List<Order>> = InMemoryDatabase.orders
-    override val menuItems: Flow<List<MenuItem>> = InMemoryDatabase.menuItems
+    override val orders: Flow<List<Order>> = inMemoryDatabase.orders
+    override val menuItems: Flow<List<MenuItem>> = inMemoryDatabase.menuItems
 
     override suspend fun fetchHistoryOrders() {
         try {
             val response = api.getHistoryOrders()
-            InMemoryDatabase.updateOrders(response)
+            inMemoryDatabase.updateOrders(response)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -24,14 +25,14 @@ class OrderHistoryRepository(
     override suspend fun fetchMenu() {
         try {
             val response = api.getMenu()
-            InMemoryDatabase.updateMenuItems(response)
+            inMemoryDatabase.updateMenuItems(response)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     override suspend fun addOrder(order: Order) {
-        InMemoryDatabase.addOrder(order)
+        inMemoryDatabase.addOrder(order)
         try {
             api.addOrder(order)
         } catch (e: Exception) {

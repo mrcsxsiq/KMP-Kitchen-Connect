@@ -6,7 +6,7 @@ import dev.marcos.lks.data.model.OrderStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-object InMemoryDatabase {
+class InMemoryDatabase {
     val orders = MutableStateFlow<List<Order>>(emptyList())
     val menuItems = MutableStateFlow<List<MenuItem>>(emptyList())
 
