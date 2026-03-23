@@ -1,5 +1,6 @@
-# 🍽️ KMP Kitchen Connect
 
+
+<img src="assets/header.png">
 
 A Kotlin Multiplatform (KMP) application designed to simulate a **Kitchen Display System (KDS)** with offline-first communication between devices.
 
@@ -11,16 +12,14 @@ This project enables two roles:
 
 ## 🚀 Features
 
-- ✅ Kotlin Multiplatform (Desktop, Android, Tablet-ready)
-- ✅ Offline-first architecture
-- ✅ Peer-to-peer communication using Ktor + JSON
-- ✅ Real-time order updates
-- ✅ Kanban-style kitchen display (KDS)
-- ✅ Simple and extensible architecture
+- Kotlin Multiplatform (Desktop, Android, Tablet-ready)
+- Peer-to-peer communication using Ktor + JSON
+- Real-time order updates
+- Kanban-style kitchen display (KDS) 
 
 ---
 
-## 🧠 Architecture Overview
+## Architecture Overview
 
 The system is designed to work **without internet**, using local communication between devices.
 
@@ -39,7 +38,7 @@ The system is designed to work **without internet**, using local communication b
 
 ---
 
-## 📦 Modules
+## Modules
 
 | Module       | Description                                                     |
 |--------------|-----------------------------------------------------------------|
@@ -49,7 +48,7 @@ The system is designed to work **without internet**, using local communication b
 
 ---
 
-## 🔄 Data Flow
+## Data Flow
 
 1. User creates an order on **Order Mode**
 2. Order is serialized to JSON
@@ -59,7 +58,7 @@ The system is designed to work **without internet**, using local communication b
 
 ---
 
-## 🛠️ How to Run
+## How to Run
 
 ### 1. Clone the repository
 
@@ -80,7 +79,7 @@ Open in Android Studio and run normally.
 
 ---
 
-## 📡 Communication Strategy
+## Communication Strategy
 
 - Uses **Ktor embedded server** in Kitchen Mode
 - Order devices act as **clients**
@@ -89,16 +88,16 @@ Open in Android Studio and run normally.
 
 ---
 
-## 🧪 Future Improvements
+## Future Improvements
 
-- 🔐 Authentication between devices
-- 🗄️ Persistent storage (Room / SQLDelight)
-- 📊 Metrics dashboard
-- 🔔 Notifications
+- Authentication between devices
+- Persistent storage (Room / SQLDelight)
+- Metrics dashboard
+- Notifications
 
 ---
 
-## 🎯 Goal
+## Goal
 
 This project demonstrates:
 - Real-world KMP usage
@@ -106,6 +105,6 @@ This project demonstrates:
 
 ---
 
-## 📄 License
+## License
 
 MIT License
