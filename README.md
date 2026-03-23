@@ -45,14 +45,15 @@ The system is designed to work **without internet**, using local communication b
 
 ## Modules
 
-| Module       | Description                                                     |
-|--------------|-----------------------------------------------------------------|
-| `common`     | Business logic, models, networking                              |
-| `dashboard`  | Dashboard KDS Feature                                           |
-| `order`      | Order Feature                                                   |
-| `composeApp` | Base application                                                |
-| `androidApp` | Android application                                             |
-| `jvmMain`    | Desktop application and Ktor server running inside Kitchen mode |
+| Module       | Description                                                       |
+|--------------|-------------------------------------------------------------------|
+| `common`     | Business logic, models, networking                                |
+| `dashboard`  | Dashboard KDS feature                                             |
+| `order`      | Order feature                                                     |
+| `composeApp` | Base application                                                  |
+| `androidApp` | Android application (Order mode)                                  |
+| `iosApp`     | iOS application     (Order mode)                                  |
+| `jvmMain`    | Desktop application and Ktor server running inside (Kitchen mode) |
 
 ---
 
