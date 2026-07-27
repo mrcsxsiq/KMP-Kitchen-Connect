@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.2"
+agp = "9.2.1"
 android-compileSdk = "36"
 android-minSdk = "29"
 android-targetSdk = "36"
@@ -13,13 +13,13 @@ composeHotReload = "1.2.0"
 composeMultiplatform = "1.11.1"
 compose-icons = "1.7.3"
 junit = "4.13.2"
-kotlin = "2.3.0"
+kotlin = "2.3.21"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 material3 = "1.11.0-alpha07"
 ktor = "3.5.1"
-ktorfit = "2.7.2"
-ksp = "2.3.4"
+ktorfit = "2.7.5"
+ksp = "2.3.10"
 koin = "4.2.2"
 
 [libraries]
@@ -76,7 +76,7 @@ compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-previ
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

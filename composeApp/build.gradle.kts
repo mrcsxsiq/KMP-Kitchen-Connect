@@ -11,10 +11,6 @@ plugins {
     alias(libs.plugins.ktorfit)
 }
 
-ktorfit {
-    compilerPluginVersion.set("2.3.3")
-}
-
 kotlin {
     androidTarget {
         compilerOptions {
